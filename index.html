@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="main.js"></script>
+<style>
+  article {
+    float: left;
+    padding: 20px;
+    width: 100%;
+    background-color: #f1f1f1;
+    height: 30px;
+    /* only for demonstration, should be removed */
+  }
+	
+   #rechts{
+    float: left;
+    width: 49%;
+  }
+
+  #links{
+    float: left;
+    width: 49%;
+  }
+</style>
+
+<body>
+
+  <div class="w3-container">
+    <h2>Lohnprogramm
+
+    </h2>
+    <p>Berechnen der Aushilfsloehne /Mandantenfaehig</p>
+  </div>
+
+  <div class="w3-bar w3-black">
+    <button id="pers" class="w3-bar-item w3-button tablink w3-red" onclick="switchtab(event)">Personal
+      Verwaltung</button>
+    <button id="stdf" class="w3-bar-item w3-button tablink" onclick="switchtab(event)">Stundeneingabe</button>
+    <button id="rep" class="w3-bar-item w3-button tablink" onclick="switchtab(event)">Reporte</button>
+    <button id="einst" class="w3-bar-item w3-button tablink" onclick="switchtab(event)">Einstellungen</button>
+
+    <select id="locations" class="w3-select w3-bar-item w3-margin-right w3-right" name="option">
+
+    </select>
+
+    
+    <button id="login" class="w3-bar-item w3-button w3-right w3-margin-right">anmelden</button>
+  </div>
+  <article></article>
+<div id="links">
+<form class="col-lg-11" id="eingabe">
+
+    <div class="form-row p-3">
+      <div class="form-group col-md-2  col-lg-4">
+        <label for="inputVorname">Vorname</label>
+        <input type="text" class="form-control" id="inputVorname" required readonly>
+      </div>
+      <div class="form-group col-md-3 col-lg-6">
+        <label for="inputNachname">Nachname</label>
+        <input type="text" class="form-control" id="inputNachname" readonly required>
+      </div>
+    </div>
+    <div class="form-group col-md-4 col-lg-10">
+      <label for="inputAdress">Addresse</label>
+      <input type="text" class="form-control" id="inputAdress" readonly required>
+    </div>
+
+    <div class="form-row p-3">
+      <div class="form-group col-md-3 col-lg-6">
+        <label for="inputCity">Stadt</label>
+        <input type="text" class="form-control" id="inputCity" readonly required>
+      </div>
+
+      <div class="form-group col-md-1 col-lg-4">
+        <label for="inputPlz">Plz</label>
+        <input type="text" class="form-control" id="inputPlz" required readonly>
+      </div>
+
+    </div>
+  <div class="form-row p-3">
+      <div class="form-group col-md-2 col-lg-4">
+        <label for="inputBirthday">Geburtstag</label>
+        <input type="date" class="form-control" id="inputBirthday" placeholder="30.12.1948" required>
+      </div>
+      <div class="form-group col-md-2 col-lg-6">
+        <label for="inputNationalitaet">Staatsangehoerigkeit</label>
+        <input type="text" class="form-control" id="inputNationalitaet" readonly required>
+      </div>
+      <div class="form-group col-md-2 col-lg-4">
+        <label for="favcolor">Farbe:</label>
+        <input type="color" id="favcolor" name="favcolor" value="#ff0000">
+		
+      </div>
+  </div>
+
+    <div class="p-3">
+      <button type="button" id="btnNext" class="btn btn-primary" disabled="disabled">Next</button>
+      <button type="button" id="btnPrev" class="btn btn-primary" disabled="disabled">Previous</button>
+      <button type="button" id="btnEdit" class="btn btn-primary" disabled="disabled">Edit</button>
+      <button type="button" id="btnNew" class="btn btn-primary"  disabled="disabled">Neu</button>
+      <button type="submit" id="btnSubmit" class="btn btn-primary" disabled="disabled">Speichern</button>
+    </div>
+	
+ </form>
+</div> 
+<div id="rechts">
+	<form class="col-lg-12" id="lohn">
+		
+	<br>
+	<div class="form-group p-3 offset-lg-0 col-lg-12" >
+		<div class="custom-control custom-checkbox ">
+	   		 <input type="checkbox" class="custom-control-input" id="mini" readonly value=1>
+	    	<label class="custom-control-label " for="mini">MiniJob</label>
+     	 </div>
+	  
+	  <div class="custom-control custom-checkbox">
+	    <input type="checkbox" class="custom-control-input" id="studi" readonly value=1>
+	    <label class="custom-control-label" for="studi">Student</label>
+      </div>
+	
+	  <div class="custom-control custom-checkbox">
+	    <input type="checkbox" class="custom-control-input" id="fest" readonly value=1>
+	    <label class="custom-control-label" for="fest">Festangestellt</label>
+      </div>
+	  <div class="custom-control custom-checkbox">
+	    <input type="checkbox" class="custom-control-input" id="gleit" readonly value=1>
+	    <label class="custom-control-label" for="gleit">Gleitzone</label>
+		 
+      </div>
+	  <br>
+	  <div class="custom-control custom-checkbox ">
+	    <input type="checkbox" class="custom-control-input" id="nacht" readonly value=1>
+	    <label class="custom-control-label " for="nacht">Nacht-, Sonn-, Feiertagszuschlag</label>
+      </div>
+  </div>
+	 <div class="form-row p-2">
+      <div class="form-group col-md-1  col-lg-3">
+        <label for="inputLohn">Maxlohn</label>
+        <input type="number" class="form-control" id="inputLohn" readonly>
+      </div>
+      <div class="form-group col-md-1 col-lg-3">
+        <label for="inputStunden">Maxstunden</label>
+        <input type="number" class="form-control" id="inputStunden" readonly>
+      </div>
+      <div class="form-group col-md-1  col-lg-3">
+        <label for="inputStdlohn">Stundenlohn</label>
+        <input type="number" class="form-control" id="inputStdlohn" readonly>
+      </div>
+      <div class="form-group col-md-1 col-lg-3">
+        <label for="inputFestlohn">Gehalt</label>
+        <input type="number" class="form-control" id="inputFestlohn" readonly>
+      </div>
+		</div>
+		 </form>
+
+  <br>
+ </div>
+ 
+  <script>
+    function switchtab(evt) {
+      var i, tablinks;
+      //x = document.getElementsByClassName("tablink");
+      //for (i = 0; i < x.length; i++) {
+      //  x[i].style.display = "block";
+      //}
+      tablinks = document.getElementsByClassName("tablink");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+      }
+      // document.getElementById(cityName).style.display = "block";
+      evt.currentTarget.className += " w3-red";
+    };
+ 
+
+$( document ).ready(function() {
+  
+  addButtonEvents(); 
+  openlocations();
+  
+});
+</script>
+</body>
+
+</html>
