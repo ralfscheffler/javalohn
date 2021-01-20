@@ -81,13 +81,13 @@ function loginBtnClick(){
       alert(error);
     });
 };
-function submitBtnClick(){
+async function submitBtnClick(){
 
   $("#btnNew").prop("disabled",true);
   $(':input').attr('readonly');
   //var input = $( "form input:text" );
     
-  postEveryThing();
+  var res = await postEveryThing();
 };
 
 function nextBtnClick(){
@@ -129,8 +129,8 @@ function movePersonal(){
     $("#inputNationalitaet").val(aPersonal[iRec].Staatsangehoerigkeit);
 }
 
-async function postData(url='',data={}){
-  const response = await fetch(url,{
+async function postPersonalData(url='',data={}){
+  let response = await fetch(url,{
     method:'POST',
     headers:{
       'Content-Type':'application/json'
@@ -185,7 +185,7 @@ async function postLohnData(url='',data={}){
         return response.json();
       };
 
-      async function postEveryThing(){
+   async function postEveryThing(){
 
         var persArr={Vorname:$('#inputVorname').val(),Name:$('#inputNachname').val(),Strasse: $('#inputAdress').val(),Ort:$('#inputCity').val(),
             PLZ:$('#inputPlz').val(),Geburtsdatum:$('#inputBirthday').val(),Staatsangehoerigkeit:$('#inputNationalitaet').val(),farbe:$("#favcolor").val(),
@@ -195,25 +195,22 @@ async function postLohnData(url='',data={}){
             zu_nacht1:$("#nacht").is(':checked') ? 1 : 0,zu_nacht2:$("#nacht").is(':checked') ? 1 : 0, zu_sonntag:$("#nacht").is(':checked') ? 1 : 0,zu_feiertag:$("#nacht").is(':checked') ? 1 : 0,
             MaxStunden:parseFloat($('#inputStunden').val())};
         
-        try{
-          //const personal = await postData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
-          //const jobs = await postJobData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
-          //const lohn = await postLohnData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
-          //const result=await postJobID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkJobsID:jobs});
-          //const resp = await postLohnID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkLohnartID:lohn});
+       
+          const personal = await postPersonalData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
+          const jobs = await postJobData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
+          const lohn = await postLohnData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
+          const result=await postJobID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkJobsID:jobs});
+          const resp = await postLohnID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkLohnartID:lohn});
 
-          const personal = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
-          const jobs = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
-          const lohn = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
-          const result=await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkJobsID:jobs.data});
-          const resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkLohnartID:lohn.data});
-        }catch(error){
-            console.log(personal.data);
-            console.log(jobs.data);
-            console.log(lohn.data);
-            console.log(result.data);
-            console.log(resp.data);
-            console.error(error);
-        }
+          //var personal = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
+         
+          //var jobs = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
+          //var lohn = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
+          //var result=await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkJobsID:jobs.data});
+          //var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkLohnartID:lohn.data});
+          //var all = await Promise.all([personal,jobs,lohn,result,resp]);
+          console.log(all);
+        
+       return all;
     };
 
