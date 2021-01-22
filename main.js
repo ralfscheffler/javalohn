@@ -37,29 +37,33 @@ function writeLocations(arrData){
 
 function writePersonal(arrData=[]){
 
-
-  aPersonal = arrData;
-  iRec  = 0;
-  iReccount = aPersonal.length;
-
+  if(aPersonal){
+      aPersonal.push(arrData);
+      iReccount = aPersonal.length;
+      iRec = iReccount-1;
+  }else{
+    aPersonal = arrData;
+    iRec  = 0;
+    iReccount = aPersonal.length;
+  };
    
   $("#btnNext").prop("disabled",false);
   $("#btnPrev").prop("disabled",false);
   $("#btnNew").prop("disabled",false);
-  $("#inputVorname").val(arrData[0].Vorname);
-  $("#inputNachname").val(arrData[0].Name);
-  $("#inputAdress").val(arrData[0].Strasse);
-  $("#inputCity").val(arrData[0].Ort);
-  $("#inputPlz").val(arrData[0].PLZ);
-  //$("#inputBirthday").val(arrData[0].Geburtsdatum);
-  $("#inputNationalitaet").val(arrData[0].Staatsangehoerigkeit);
+  $("#inputVorname").val(arrData[iRec].Vorname);
+  $("#inputNachname").val(arrData[iRec].Name);
+  $("#inputAdress").val(arrData[iRec].Strasse);
+  $("#inputCity").val(arrData[iRec].Ort);
+  $("#inputPlz").val(arrData[iRec].PLZ);
+  $("#inputBirthday").val(arrData[iRec].Geburtsdatum);
+  $("#inputNationalitaet").val(arrData[iRec].Staatsangehoerigkeit);
 };
 
 
 
 function addButtonEvents(){
   document.getElementById('btnSubmit').addEventListener('click',submitBtnClick);
-  
+  //document.getElementById('locations').addEventlistener('change', selectionChange);
   document.getElementById('login').addEventListener('click',loginBtnClick);
   document.getElementById('btnNext').addEventListener('click',nextBtnClick);
   document.getElementById('btnPrev').addEventListener('click',prevBtnClick);
@@ -67,8 +71,11 @@ function addButtonEvents(){
 };
 
 function loginBtnClick(){
-  var sFilter=  $("#locations :selected").text();
+  
 
+   
+
+    var sFilter=  $("#locations :selected").text();
     fetch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter?$filter=contains(Betrieb,'+ "'" +sFilter+"'" +')')
     .then(function(response){
         if(!response.ok){
@@ -87,7 +94,7 @@ async function submitBtnClick(){
   $(':input').attr('readonly');
   //var input = $( "form input:text" );
     
-  var res = await postEveryThing();
+   postEveryThing();
 };
 
 function nextBtnClick(){
@@ -194,23 +201,44 @@ async function postLohnData(url='',data={}){
         var lohnArr={MaxLohn:parseFloat($('#inputLohn').val()),Stundenlohn:parseFloat($('#inputStdlohn').val()),Festlohn:parseFloat($('#inputFestlohn').val()),
             zu_nacht1:$("#nacht").is(':checked') ? 1 : 0,zu_nacht2:$("#nacht").is(':checked') ? 1 : 0, zu_sonntag:$("#nacht").is(':checked') ? 1 : 0,zu_feiertag:$("#nacht").is(':checked') ? 1 : 0,
             MaxStunden:parseFloat($('#inputStunden').val())};
+
+            
         
        
-          const personal = await postPersonalData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
-          const jobs = await postJobData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
-          const lohn = await postLohnData('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
-          const result=await postJobID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkJobsID:jobs});
-          const resp = await postLohnID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkLohnartID:lohn});
+          $("#btnSubmit").prop("disabled", true);
+          
+          //const result=await postJobID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkJobsID:jobs});
+          //const resp = await postLohnID('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.id+ ')',{fkLohnartID:lohn});
+          var successStatus=false;
 
-          //var personal = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
+          var personal = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter',persArr);
+
+          successStatus = (personal.status==201);
+
+          var jobs = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
+
+          successStatus = (jobs.status==201);
+
+          var lohn = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
+
+          successStatus = (lohn.status==201);
+
+          var result=await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkJobsID:jobs.data});
+          successStatus = (result.status==200);
+
+          var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkLohnartID:lohn.data});
+          successStatus = (resp.status==200) &&(personal.status==201) &&(jobs.status==201) &&(lohn.status==201)&&(result.status==200);
+
+          if(successStatus){
+            var sFilter=  $("#locations :selected").text();
+            var data = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter?$filter=contains(Betrieb,'+ "'" +sFilter+"'" +')')
+            writePersonal(data.data.value);
+          }else {
+            alert('etwas ist schiefgegangen');
+          };
+
          
-          //var jobs = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job',jobArr);
-          //var lohn = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnArr);
-          //var result=await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkJobsID:jobs.data});
-          //var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')',{fkLohnartID:lohn.data});
-          //var all = await Promise.all([personal,jobs,lohn,result,resp]);
-          console.log(all);
         
-       return all;
+       
     };
 
