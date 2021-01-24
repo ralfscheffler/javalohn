@@ -88,16 +88,28 @@ function editBtnClick(){
 };
 async function deleteBtnClick(){
 
-  var personalID = aPersonal[iRec].id;
-
-  try{
-    const result=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')');
-    successStatus = (result.status==204);
-  } catch (err) {
-    // Handle Error Here
-    console.error(err);
-}
+  var personalID  = aPersonal[iRec].id;
+  var jobID       =  (aPersonal[iRec].fkJobsID) ?aPersonal[iRec].fkJobsID.job_id:0; 
+  var lohnID      =  (aPersonal[iRec].fkLohnartID) ? aPersonal[iRec].fkLohnartID.fkLohnart.ID :0;
+ 
   
+ 
+
+  
+  const result=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')');
+  successStatus = (result.status==204);
+  
+  if (successStatus && jobID >0){
+   
+      const jobres=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job(' +jobID+ ')');
+      successStatus = (jobres.status==204) && (result.status==204);
+    
+  } ; 
+  if (successStatus && lohnID >0){
+    
+      const lohnres=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform(' +lohnID+ ')');
+    
+  } ;      
 };
 
 function loginBtnClick(){
@@ -161,12 +173,12 @@ function movePersonal(){
     $("#inputPlz").val(aPersonal[iRec].PLZ);
     $("#inputBirthday").val(aPersonal[iRec].Geburtsdatum);
     $("#inputNationalitaet").val(aPersonal[iRec].Staatsangehoerigkeit);
-    
-    (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
-    (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
-    (aPersonal[iRec].fkJobsID.student==1)?$("#studi").prop('checked', true):$("#studi").prop('checked', false);
-    (aPersonal[iRec].fkJobsID.gleitzone==1)?$("#gleit").prop('checked', true):$("#gleit").prop('checked', false);
-    
+    if(aPersonal[iRec].fkJobsID){
+      (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
+      (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
+      (aPersonal[iRec].fkJobsID.student==1)?$("#studi").prop('checked', true):$("#studi").prop('checked', false);
+      (aPersonal[iRec].fkJobsID.gleitzone==1)?$("#gleit").prop('checked', true):$("#gleit").prop('checked', false);
+    };
     if(aPersonal[iRec].fkLohnartID){
       $("#inputLohn").val(aPersonal[iRec].fkLohnartID.MaxLohn);
       $("#inputFestlohn").val(aPersonal[iRec].fkLohnartID.Festlohn);
