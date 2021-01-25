@@ -90,7 +90,7 @@ async function deleteBtnClick(){
 
   var personalID  = aPersonal[iRec].id;
   var jobID       =  (aPersonal[iRec].fkJobsID) ?aPersonal[iRec].fkJobsID.job_id:0; 
-  var lohnID      =  (aPersonal[iRec].fkLohnartID) ? aPersonal[iRec].fkLohnartID.fkLohnart.ID :0;
+  var lohnID      =  (aPersonal[iRec].fkLohnartID) ? aPersonal[iRec].fkLohnartID.id :0;
  
   
  
@@ -109,7 +109,11 @@ async function deleteBtnClick(){
     
       const lohnres=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform(' +lohnID+ ')');
     
-  } ;      
+  } ;
+  if(successStatus){
+    aPersonal.splice(iRec,1);
+    iRec--;
+  }      
 };
 
 function loginBtnClick(){
