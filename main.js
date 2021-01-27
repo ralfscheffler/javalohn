@@ -40,12 +40,13 @@ function writePersonal(arrData=[]){
   if(aPersonal){
       aPersonal.push(arrData);
       iReccount = aPersonal.length;
-      iRec = iReccount-1;
+      iRec =iReccount-1;
+      movePersonal()
   }else{
     aPersonal = arrData;
     iRec  = 0;
     iReccount = aPersonal.length;
-  };
+  
    
   $("#btnNext").prop("disabled",false);
   $("#btnPrev").prop("disabled",false);
@@ -66,8 +67,14 @@ function writePersonal(arrData=[]){
     
   };
   if(arrData.fkLohnartID){
+    $("#inputLohn").val(aPersonal[iRec].fkLohnartID.MaxLohn);
+      $("#inputFestlohn").val(aPersonal[iRec].fkLohnartID.Festlohn);
+      $("#inputStunden").val(aPersonal[iRec].fkLohnartID.MaxStunden);
+      $("#inputStdlohn").val(aPersonal[iRec].fkLohnartID.Stundenlohn);
+      (aPersonal[iRec].fkLohnartID.zu_nacht1==1)?$("#nacht").prop('checked', true):$("#nacht").prop('checked', false);
 
   };
+};
 };
 
 
@@ -113,6 +120,7 @@ async function deleteBtnClick(){
   if(successStatus){
     aPersonal.splice(iRec,1);
     iRec--;
+    movePersonal(); 
   }      
 };
 
@@ -138,6 +146,12 @@ async function submitBtnClick(){
   //var input = $( "form input:text" );
     
    postEveryThing();
+
+   $("#btnNext").prop("disabled",false);
+   $("#btnPrev").prop("disabled",false);
+   $("#btnSubmit").prop("disabled",true);
+   $("#btnNew").prop("disabled",false);
+  
 };
 
 function nextBtnClick(){
