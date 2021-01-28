@@ -5,7 +5,7 @@
 var   aPersonal;
 var   iRec=0;
 var   iReccount=0;
-
+var   aEdit=[];
 
 function openlocations() {
     fetch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Location')
@@ -52,6 +52,8 @@ function writePersonal(arrData=[]){
   $("#btnPrev").prop("disabled",false);
   $("#btnNew").prop("disabled",false);
   $("#btnDelete").prop("disabled",false);
+  $("#btnEdit").prop("disabled",false);
+
   $("#inputVorname").val(arrData[iRec].Vorname);
   $("#inputNachname").val(arrData[iRec].Name);
   $("#inputAdress").val(arrData[iRec].Strasse);
@@ -87,10 +89,17 @@ function addButtonEvents(){
   document.getElementById('btnPrev').addEventListener('click',prevBtnClick);
   document.getElementById('btnDelete').addEventListener('click',deleteBtnClick);
   document.getElementById('btnNew').addEventListener('click', newBtnClick);
+  document.getElementById('btnEdit').addEventListener('click',editBtnClick);
 }
 
 
 function editBtnClick(){
+    $("#btnNext").prop("disabled",true);
+    $("#btnPrev").prop("disabled",true);
+    $("#btnSubmit").prop("disabled",false);
+
+    $(':input').removeAttr('readonly'); //readonly aufheben  
+
 
 };
 async function deleteBtnClick(){
@@ -218,50 +227,23 @@ async function postPersonalData(url='',data={}){
   return response.json();
 };
 
-async function postJobData(url='',data={}){
-  const response = await fetch(url,{
-    method: 'POST',
-    headers:{
-      'Content-Type':'application/json'  
-    },
-    body: JSON.stringify(data)
-  });
-  return response.json();
-};
+async function editData(sName,sValue){
+  var personalID  = aPersonal[iRec].id;
 
-async function postLohnData(url='',data={}){
-  const response = await fetch(url,{
-    method: 'POST',
-    headers:{
-      'Content-Type':'application/json'  
-    },
-    body: JSON.stringify(data)
-  });
-  return response.json();
-};
-
-  async function postJobID(url='',data={}){
-    const response = await fetch(url,{
-      method:'PATCH',
-      headers:{
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
+  aEdit.push(sName +":"+ sValue);  
+ 
   
-    async function postLohnID(url='',data={}){
-        const response = await fetch(url,{
-          method:'PATCH',
-          headers:{
-            'Content-Type':'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        //await this.reloadMitarbeiter;
-        return response.json();
-      };
+  alert (sName +':' +sValue);
+  try{
+          var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',aEdit);
+          successStatus = (resp.status==200) &&(personal.status==201) &&(jobs.status==201) &&(lohn.status==201)&&(result.status==200);
+        } catch (err) {
+          // Handle Error Here
+          console.log(err);
+      }
+
+}
+
 
    async function postEveryThing(){
 
@@ -320,9 +302,9 @@ async function postLohnData(url='',data={}){
       }
 
           if(successStatus){
-            var sFilter=  $("#locations :selected").text();
-            var data = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter?$filter=contains(Betrieb,'+ "'" +sFilter+"'" +')')
-            writePersonal(data.data.value);
+            //var sFilter=  $("#locations :selected").text();
+            var data = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personal.data.id+ ')'+'?$expand=fkJobsID,fkLohnartID');
+            writePersonal(data.data);
           }else {
             alert('etwas ist schiefgegangen');
           };

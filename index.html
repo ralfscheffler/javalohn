@@ -59,42 +59,42 @@
     <div class="form-row p-3">
       <div class="form-group col-md-2  col-lg-4">
         <label for="inputVorname">Vorname</label>
-        <input type="text" class="form-control" id="inputVorname" required readonly>
+        <input type="text" class="form-control" id="inputVorname" name="Vorname" required readonl>
       </div>
       <div class="form-group col-md-3 col-lg-6">
         <label for="inputNachname">Nachname</label>
-        <input type="text" class="form-control" id="inputNachname" readonly required>
+        <input type="text" class="form-control" id="inputNachname" name="Name"readonly required>
       </div>
     </div>
     <div class="form-group col-md-4 col-lg-10">
       <label for="inputAdress">Addresse</label>
-      <input type="text" class="form-control" id="inputAdress" readonly required>
+      <input type="text" class="form-control" id="inputAdress" name="Strasse"readonly required>
     </div>
 
     <div class="form-row p-3">
       <div class="form-group col-md-3 col-lg-6">
         <label for="inputCity">Stadt</label>
-        <input type="text" class="form-control" id="inputCity" readonly required>
+        <input type="text" class="form-control" id="inputCity" name="Ort"readonly required>
       </div>
 
       <div class="form-group col-md-1 col-lg-4">
         <label for="inputPlz">Plz</label>
-        <input type="text" class="form-control" id="inputPlz" required readonly>
+        <input type="text" class="form-control" id="inputPlz" name="PLZ"required readonly>
       </div>
 
     </div>
   <div class="form-row p-3">
       <div class="form-group col-md-2 col-lg-4">
         <label for="inputBirthday">Geburtstag</label>
-        <input type="date" class="form-control" id="inputBirthday" placeholder="30.12.1948">
+        <input type="date" class="form-control" id="inputBirthday" name="Geburtsdatum" placeholder="30.12.1948">
       </div>
       <div class="form-group col-md-2 col-lg-6">
         <label for="inputNationalitaet">Staatsangehoerigkeit</label>
-        <input type="text" class="form-control" id="inputNationalitaet" readonly required>
+        <input type="text" class="form-control" id="inputNationalitaet" name="Staatsangehoerigkeit" readonly required>
       </div>
       <div class="form-group col-md-2 col-lg-4">
         <label for="favcolor">Farbe:</label>
-        <input type="color" id="favcolor" name="favcolor" value="#ff0000">
+        <input type="color" id="favcolor" name="farbe" value="#ff0000">
 		
       </div>
   </div>
@@ -102,7 +102,7 @@
     <div class="p-3">
       <button type="button" id="btnNext" class="btn btn-primary" disabled="disabled">Next</button>
       <button type="button" id="btnPrev" class="btn btn-primary" disabled="disabled">Previous</button>
-      <button type="button" id="btnEdit" class="btn btn-primary" disabled="disabled">Edit</button>
+      <button type="button" id="btnEdit" class="btn btn-primary" >Edit</button>
       <button type="button" id="btnDelete" class="btn btn-primary" disabled="disabled">Delete</button>
       <button type="button" id="btnNew" class="btn btn-primary"  disabled="disabled">Neu</button>
       <button type="button" id="btnSubmit" class="btn btn-primary" disabled="disabled">Speichern</button>
@@ -183,8 +183,16 @@ $( document ).ready(function() {
   
   addButtonEvents(); 
   openlocations();
+  $('input, select, textarea').on('change', function() {
+    editData(this.name,this.value);
+  });
+  
   
 });
+
+
+  
+  
 
 </script>
 </body>
