@@ -107,10 +107,6 @@ async function deleteBtnClick(){
   var personalID  = aPersonal[iRec].id;
   var jobID       =  (aPersonal[iRec].fkJobsID) ?aPersonal[iRec].fkJobsID.job_id:0; 
   var lohnID      =  (aPersonal[iRec].fkLohnartID) ? aPersonal[iRec].fkLohnartID.id :0;
- 
-  
- 
-
   
   const result=await axios.delete('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')');
   successStatus = (result.status==204);
@@ -228,15 +224,16 @@ async function postPersonalData(url='',data={}){
 };
 
 async function editData(sName,sValue){
-  var personalID  = aPersonal[iRec].id;
-
-  aEdit.push(sName +":"+ sValue);  
- 
+  var personalID  = aPersonal[iRec].id; 
   
-  alert (sName +':' +sValue);
+  aEdit.push(sName,sValue);  
+  const entries = new Map([aEdit]);
+  aEdit=Object.fromEntries(entries);
+  
+  
   try{
           var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',aEdit);
-          successStatus = (resp.status==200) &&(personal.status==201) &&(jobs.status==201) &&(lohn.status==201)&&(result.status==200);
+          
         } catch (err) {
           // Handle Error Here
           console.log(err);
