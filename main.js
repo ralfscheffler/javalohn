@@ -96,6 +96,10 @@ function addButtonEvents(){
 function editBtnClick(){
     $("#btnNext").prop("disabled",true);
     $("#btnPrev").prop("disabled",true);
+    $("#btnEdit").prop("disabled",true);
+    $("#btnNew").prop("disabled",true);
+    $("#btnDelete").prop("disabled",true);
+
     $("#btnSubmit").prop("disabled",false);
 
     $(':input').removeAttr('readonly'); //readonly aufheben  
@@ -149,13 +153,20 @@ async function submitBtnClick(){
   $("#btnNew").prop("disabled",true);
   $(':input').attr('readonly');
   //var input = $( "form input:text" );
+  if(aEdit){
     
-   postEveryThing();
+    postChanges();
+  }else{
+    
+    postEveryThing();
+  };
 
    $("#btnNext").prop("disabled",false);
    $("#btnPrev").prop("disabled",false);
    $("#btnSubmit").prop("disabled",true);
    $("#btnNew").prop("disabled",false);
+   $("#btnDelete").prop("disabled",false);
+   $("#btnEdit").prop("disabled",false);
   
 };
 
@@ -175,7 +186,8 @@ function prevBtnClick(){
   
 };
 function newBtnClick(){
-    $("#btnNext").prop("disabled",true);
+    $("#btnNext").prop("disabled", true);
+   
     $("#btnPrev").prop("disabled",true);
     $("#btnSubmit").prop("disabled",false);
 
@@ -224,23 +236,28 @@ async function postPersonalData(url='',data={}){
 };
 
 async function editData(sName,sValue){
-  var personalID  = aPersonal[iRec].id; 
+   
+  var aTemp =[];
+  aTemp.push(sName,sValue);
+  aEdit.push(aTemp);  
   
-  aEdit.push(sName,sValue);  
-  const entries = new Map([aEdit]);
-  aEdit=Object.fromEntries(entries);
-  
-  
-  try{
-          var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',aEdit);
-          
-        } catch (err) {
-          // Handle Error Here
-          console.log(err);
-      }
 
 }
 
+async function postChanges(){
+  var personalID  = aPersonal[iRec].id;
+
+  const entries = new Map([aEdit]);
+  aEdit=Object.fromEntries(entries);
+  
+  try{
+    var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',aEdit);
+          
+    } catch (err) {
+          // Handle Error Here
+    console.log(err);
+    };
+}
 
    async function postEveryThing(){
 
