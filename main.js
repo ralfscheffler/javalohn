@@ -239,7 +239,8 @@ async function editData(sName,sValue){
    
   var aTemp =[];
   aTemp.push(sName,sValue);
-  aEdit.push(aTemp);  
+  aEdit.push(aTemp);
+  aTemp=[];  
   
 
 }
