@@ -5,7 +5,7 @@
 var   aPersonal;
 var   iRec=0;
 var   iReccount=0;
-var   aEdit=[];
+var   aEdit;//=[];
 
 function openlocations() {
     fetch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Location')
@@ -155,10 +155,15 @@ async function submitBtnClick(){
   //var input = $( "form input:text" );
   if(aEdit){
     
-    postChanges();
+    //postChanges();
   }else{
-    
-    postEveryThing();
+    var data;
+    aEdit = $(".changed");
+    $(".changed").each(function(i,value){
+      data=data+$(this).attr("name")+":"+$(this).val()+",";
+      alert(value);
+    })
+    //postEveryThing();
   };
 
    $("#btnNext").prop("disabled",false);
@@ -235,12 +240,12 @@ async function postPersonalData(url='',data={}){
   return response.json();
 };
 
-async function editData(sName,sValue){
+async function editData(ha){
    
-  var aTemp =[];
-  aTemp.push(sName,sValue);
-  aEdit.push(aTemp);
-  aTemp=[];  
+  
+$(".changed").each(function(){
+aEdit=aEdit+$(ha).attr("name")+":"+$(ha).val()+",";
+}); 
   
 
 }
