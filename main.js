@@ -5,7 +5,7 @@
 var   aPersonal;
 var   iRec=0;
 var   iReccount=0;
-var   aEdit;//=[];
+var   lEditFlag=false;
 
 function openlocations() {
     fetch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Location')
@@ -94,6 +94,8 @@ function addButtonEvents(){
 
 
 function editBtnClick(){
+    lEditFlag=true;
+
     $("#btnNext").prop("disabled",true);
     $("#btnPrev").prop("disabled",true);
     $("#btnEdit").prop("disabled",true);
@@ -153,17 +155,12 @@ async function submitBtnClick(){
   $("#btnNew").prop("disabled",true);
   $(':input').attr('readonly');
   //var input = $( "form input:text" );
-  if(aEdit){
+  if(lEditFlag){
     
-    //postChanges();
+    postChanges();
   }else{
-    var data;
-    aEdit = $(".changed");
-    $(".changed").each(function(i,value){
-      data=data+$(this).attr("name")+":"+$(this).val()+",";
-      alert(value);
-    })
-    //postEveryThing();
+    
+    postEveryThing();
   };
 
    $("#btnNext").prop("disabled",false);
@@ -240,29 +237,27 @@ async function postPersonalData(url='',data={}){
   return response.json();
 };
 
-async function editData(ha){
-   
-  
-$(".changed").each(function(){
-aEdit=aEdit+$(ha).attr("name")+":"+$(ha).val()+",";
-}); 
-  
-
-}
 
 async function postChanges(){
   var personalID  = aPersonal[iRec].id;
 
-  const entries = new Map([aEdit]);
-  aEdit=Object.fromEntries(entries);
+  var data={};
+   
+    $(".changed").each(function(i,value){
+      data[$(this).attr("name")]= $(this).val();
+      //aPersonal[iRec].$(this).attr("name")= $(this).val(); funktioniert so nicht.
+    })
   
   try{
-    var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',aEdit);
+    var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',data);
           
     } catch (err) {
           // Handle Error Here
     console.log(err);
     };
+    $('input, select, textarea').removeClass(".changed");
+
+    lEditFlag=false;
 }
 
    async function postEveryThing(){
