@@ -116,46 +116,46 @@
 	<br>
 	<div class="form-group p-3 offset-lg-0 col-lg-12" >
 		<div class="custom-control custom-checkbox ">
-	   		 <input type="checkbox" class="custom-control-input" id="mini" readonly value=1>
+	   		 <input type="checkbox" class="custom-control-input" id="mini" name="minijob" readonly value=1>
 	    	<label class="custom-control-label " for="mini">MiniJob</label>
      	 </div>
 	  
 	  <div class="custom-control custom-checkbox">
-	    <input type="checkbox" class="custom-control-input" id="studi" readonly value=1>
+	    <input type="checkbox" class="custom-control-input" id="studi" name="student" readonly value=1>
 	    <label class="custom-control-label" for="studi">Student</label>
       </div>
 	
 	  <div class="custom-control custom-checkbox">
-	    <input type="checkbox" class="custom-control-input" id="fest" readonly value=1>
+	    <input type="checkbox" class="custom-control-input" id="fest" name="fest" readonly value=1>
 	    <label class="custom-control-label" for="fest">Festangestellt</label>
       </div>
 	  <div class="custom-control custom-checkbox">
-	    <input type="checkbox" class="custom-control-input" id="gleit" readonly value=1>
+	    <input type="checkbox" class="custom-control-input" id="gleit" name="gleitzone" readonly value=1>
 	    <label class="custom-control-label" for="gleit">Gleitzone</label>
 		 
       </div>
 	  <br>
 	  <div class="custom-control custom-checkbox ">
-	    <input type="checkbox" class="custom-control-input" id="nacht" readonly value=1>
+	    <input type="checkbox" class="custom-control-input" id="nacht" name="zu_nacht1" readonly value=1>
 	    <label class="custom-control-label " for="nacht">Nacht-, Sonn-, Feiertagszuschlag</label>
       </div>
   </div>
 	 <div class="form-row p-2">
       <div class="form-group col-md-1  col-lg-3">
         <label for="inputLohn">Maxlohn</label>
-        <input type="number" class="form-control" id="inputLohn" readonly>
+        <input type="number" class="form-control" id="inputLohn" name="MaxLohn" readonly>
       </div>
       <div class="form-group col-md-1 col-lg-3">
         <label for="inputStunden">Maxstunden</label>
-        <input type="number" class="form-control" id="inputStunden" readonly>
+        <input type="number" class="form-control" id="inputStunden" name="MaxStunden" readonly>
       </div>
       <div class="form-group col-md-1  col-lg-3">
         <label for="inputStdlohn">Stundenlohn</label>
-        <input type="number" class="form-control" id="inputStdlohn" readonly>
+        <input type="number" class="form-control" id="inputStdlohn" name="Stundenlohn" readonly>
       </div>
       <div class="form-group col-md-1 col-lg-3">
         <label for="inputFestlohn">Gehalt</label>
-        <input type="number" class="form-control" id="inputFestlohn" readonly>
+        <input type="number" class="form-control" id="inputFestlohn" name="Festlohn" readonly>
       </div>
 		</div>
 		 </form>
@@ -183,15 +183,20 @@ $( document ).ready(function() {
   
   addButtonEvents(); 
   openlocations();
-  $('input, select, textarea').on('change', function() {
+  //$('input, select, textarea').on('change', function() {
+    $('input, input[type="checkbox"]').on('change', function() {
     
     $(this).addClass('changed');
    
   });
-  
-  
+
+  $('input[type="checkbox"]').change(function () {
+    $(this).addClass('changed');
+   
 });
 
+  
+});
 
   
   

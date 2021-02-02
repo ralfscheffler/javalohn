@@ -245,12 +245,15 @@ async function postChanges(){
    
     $(".changed").each(function(i,value){
       data[$(this).attr("name")]= $(this).val();
-      //aPersonal[iRec].$(this).attr("name")= $(this).val(); funktioniert so nicht.
+      
     })
   
   try{
     var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',data);
-          
+        resp = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')'+'?$expand=fkJobsID,fkLohnartID'); 
+        
+        aPersonal[iRec]=resp.data; // neue Daten werden eingelesen.
+
     } catch (err) {
           // Handle Error Here
     console.log(err);
