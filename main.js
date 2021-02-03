@@ -62,7 +62,7 @@ function writePersonal(arrData=[]){
   $("#inputBirthday").val(arrData[iRec].Geburtsdatum);
   $("#inputNationalitaet").val(arrData[iRec].Staatsangehoerigkeit);
   $("#favcolor").val(aPersonal[iRec].farbe);
-  
+
   if(arrData.fkJobsID){
     (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
     (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
@@ -242,25 +242,39 @@ async function postPersonalData(url='',data={}){
 
 
 async function postChanges(){
+ 
   var personalID  = aPersonal[iRec].id;
-  var jobID       = aPersonal[iRec].fkJobsID.job_id;
-  var lohnID      = aPersonal[iRec].fkLohnartID.id;
+  var jobID       = (aPersonal[iRec].fkJobsID) ?aPersonal[iRec].fkJobsID.job_id :'';
+  var lohnID      = (aPersonal[iRec].fkLohnartID) ?aPersonal[iRec].fkLohnartID.id :'';
 
   var data={};
   var jobData;
   var lohnData; 
+
     $(".changed").each(function(i,value){
       data[$(this).attr("name")]= $(this).val();
       
-    })
+    }) //hole mir alle Änderungen
   
-   jobData = splitJob(data); 
-   lohnData= splitLohn(data);
+   jobData = splitJob(data); //Änderung in Job Description
+   lohnData= splitLohn(data);//Änderung Lohnart
+
   try{
       var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',data);
-      var jres = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job(' +jobID+ ')',jobData);
-      var lres = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform(' +lohnID+ ')',lohnData);
 
+      if (jobID){
+         var job = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job(' +jobID+ ')',jobData);
+      }else{
+          var job = await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job', jobData); //neuer Datensatz wird angelegt
+
+          resp  = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',{fkJobsID:job.data});
+      };
+      if(lohnID){
+        var lohn = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform(' +lohnID+ ')',lohnData);
+      }else{
+        var lohn =await axios.post('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform',lohnData);
+            resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',{fkLohnartID:lohn.data});
+      };
 
           resp = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')'+'?$expand=fkJobsID,fkLohnartID'); 
         
@@ -270,7 +284,7 @@ async function postChanges(){
           // Handle Error Here
     console.log(err);
     };
-    $('input, select, textarea').removeClass(".changed");
+    $('input, select, textarea').removeClass(".changed"); //die Markierung rückgängig machen
 
     lEditFlag=false;
 }
