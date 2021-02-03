@@ -61,6 +61,8 @@ function writePersonal(arrData=[]){
   $("#inputPlz").val(arrData[iRec].PLZ);
   $("#inputBirthday").val(arrData[iRec].Geburtsdatum);
   $("#inputNationalitaet").val(arrData[iRec].Staatsangehoerigkeit);
+  $("#favcolor").val(aPersonal[iRec].farbe);
+  
   if(arrData.fkJobsID){
     (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
     (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
@@ -210,6 +212,7 @@ function movePersonal(){
     $("#inputPlz").val(aPersonal[iRec].PLZ);
     $("#inputBirthday").val(aPersonal[iRec].Geburtsdatum);
     $("#inputNationalitaet").val(aPersonal[iRec].Staatsangehoerigkeit);
+    $("#favcolor").val(aPersonal[iRec].farbe);
     if(aPersonal[iRec].fkJobsID){
       (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
       (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
@@ -240,19 +243,28 @@ async function postPersonalData(url='',data={}){
 
 async function postChanges(){
   var personalID  = aPersonal[iRec].id;
+  var jobID       = aPersonal[iRec].fkJobsID.job_id;
+  var lohnID      = aPersonal[iRec].fkLohnartID.id;
 
   var data={};
-   
+  var jobData;
+  var lohnData; 
     $(".changed").each(function(i,value){
       data[$(this).attr("name")]= $(this).val();
       
     })
   
+   jobData = splitJob(data); 
+   lohnData= splitLohn(data);
   try{
-    var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',data);
-        resp = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')'+'?$expand=fkJobsID,fkLohnartID'); 
+      var resp = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')',data);
+      var jres = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Job(' +jobID+ ')',jobData);
+      var lres = await axios.patch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Lohnform(' +lohnID+ ')',lohnData);
+
+
+          resp = await axios.get('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter(' +personalID+ ')'+'?$expand=fkJobsID,fkLohnartID'); 
         
-        aPersonal[iRec]=resp.data; // neue Daten werden eingelesen.
+          aPersonal[iRec]=resp.data; // neue Daten werden eingelesen.
 
     } catch (err) {
           // Handle Error Here
