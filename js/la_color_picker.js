@@ -2,6 +2,8 @@ var colorInput = document.getElementById('favcolor');
 var colorPalette = document.getElementById('colorPalette');
 colorInput.addEventListener("click", showColorPalette);
 colorInput.addEventListener("focusout", hideColorPalette);
+colorInput.addEventListener("change", updateBorder);
+
 colorPalette.mouseIsOver = false;
 colorInput.style.borderRight =  `10px solid ${colorInput.value}`;
 
@@ -10,6 +12,9 @@ colorPalette.onmouseover = () => {
 };
 colorPalette.onmouseout = () => {
   colorPalette.mouseIsOver = false;
+}
+function updateBorder(){
+  colorInput.style.borderRight =  `10px solid ${colorInput.value}`;
 }
 
 function hideColorPalette() {

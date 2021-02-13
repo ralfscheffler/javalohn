@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
-<title>W3.CSS</title>
+<title>Lohnprogramm</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -66,6 +66,7 @@
     <button id="login" class="w3-bar-item w3-button w3-right w3-margin-right">anmelden</button>
   </div>
   <article></article>
+<div id='tabcontainer'>
 <div id="links">
 <form class="col-lg-11" id="eingabe">
 
@@ -179,6 +180,12 @@
 
   <br>
  </div>
+</div>
+
+ <section id='tab2' style=display:none></section>
+ <section id='tab2' style=display:none></section>
+ <section id='tab2' style=display:none></section>
+
  
   <script>
     function switchtab(evt) {
@@ -190,9 +197,22 @@
       tablinks = document.getElementsByClassName("tablink");
       for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+
       }
       // document.getElementById(cityName).style.display = "block";
       evt.currentTarget.className += " w3-red";
+      if (evt.currentTarget.id == 'stdf'){
+        document.getElementById('tabcontainer').style.display = "none";
+        document.getElementById('tab2').style.display = "block";
+        
+        $("#tab2").load("tab2.html");
+        
+      }else{
+        document.getElementById('tab2').style.display = "none";
+        document.getElementById('tabcontainer').style.display = "block";
+        
+
+      }
     };
    
 
@@ -206,14 +226,7 @@ $( document ).ready(function() {
     $(this).addClass('changed');
    
   });
-
- // $('input[type="checkbox"]').change(function () {
- //   $(this).addClass('changed');
-   
-//});
-
-});
-  
+}) 
 </script>
 <script src="js/la_color_picker.js"></script>
 </body>

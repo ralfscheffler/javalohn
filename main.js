@@ -62,7 +62,7 @@ function writePersonal(arrData=[]){
   $("#inputBirthday").val(arrData[iRec].Geburtsdatum);
   $("#inputNationalitaet").val(arrData[iRec].Staatsangehoerigkeit);
   $("#favcolor").val(aPersonal[iRec].farbe);
-
+  //alert($("inputPlz").css("background-color"));  
   if(arrData.fkJobsID){
     (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
     (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
@@ -213,6 +213,8 @@ function movePersonal(){
     $("#inputBirthday").val(aPersonal[iRec].Geburtsdatum);
     $("#inputNationalitaet").val(aPersonal[iRec].Staatsangehoerigkeit);
     $("#favcolor").val(aPersonal[iRec].farbe);
+    $("favcolor").css('border-style' , aPersonal[iRec].farbe);
+
     if(aPersonal[iRec].fkJobsID){
       (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
       (aPersonal[iRec].fkJobsID.fest==1)?$("#fest").prop('checked', true):$("#fest").prop('checked', false);
