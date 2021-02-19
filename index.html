@@ -5,13 +5,19 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/la_color_picker.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<script src="js/daypilot/daypilot-all.js"></script>
+  
+ 
+  <script src="js/daypilot/ralleManipulate.js"></script>
 
 
 <script src="main.js"></script>
 <script src="hilfsfunctionen.js"></script>
+<script src="tab2.js"></script>
 
 <style>
   article {
@@ -65,8 +71,16 @@
     
     <button id="login" class="w3-bar-item w3-button w3-right w3-margin-right">anmelden</button>
   </div>
-  <article></article>
+  
+  <article>
+    
+  </article>
 <div id='tabcontainer'>
+  <div class="header">
+    <h1><a href=#>Personalverwaltung</a></h1>
+    <div><a href=#>Batschkapp, Nachtleben, Kulturzentrum</a> 
+    </div>
+  </div>
 <div id="links">
 <form class="col-lg-11" id="eingabe">
 
@@ -107,8 +121,7 @@
         <input type="text" class="form-control" id="inputNationalitaet" name="Staatsangehoerigkeit" readonly required>
       </div>
       <div class="form-group col-md-2 col-lg-5">
-        <!---<label for="favcolor">Farbe:</label>
-        <input type="color" id="favcolor" name="farbe" value="#ff0000">--->
+        
         <label for="colorPalette">Farbe: </label>
         <input type="text" class="inp" id="favcolor" name="farbe" readonly>
         <div class="palette" id="colorPalette"></div>
@@ -182,9 +195,322 @@
  </div>
 </div>
 
- <section id='tab2' style=display:none></section>
- <section id='tab2' style=display:none></section>
- <section id='tab2' style=display:none></section>
+ <section id='tab2' style=display:none>
+  <div class="header">
+    <h1><a href=#>Schichtplanner</a></h1>
+    <div><a href=#>Batschkapp, Nachtleben, Kulturzentrum</a> 
+    </div>
+  </div>
+  
+  <div class="main">
+    <div class="space">
+     <!--- Location: <select id="locations"></select>-->
+      &nbsp;&nbsp;&nbsp;
+      <button id="nextMonth" onclick="goMonth(1);">Monat +</button>
+      &nbsp;
+      <button id="prevMonth" onclick="goMonth(0);">Monat -</button>
+    </div>
+    
+    <div id="dp"></div>
+  </div>
+  
+  <script>
+    var dDaypilotMonthToDisplay = DayPilot.Date.today();
+    var locations = {
+      list: [],
+      find: function (id) {
+        if (!locations.list) {
+          return null;
+        }
+        return locations.list.find(function (item) {
+          return item.id === id;
+        });
+      },
+      activate: async function (location) {
+        var item = location;
+        if (typeof location !== "object") {
+          item = locations.find(location);
+        }
+        dp.events.list = [];
+        
+        var Url ="http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Plan?$expand=stamm_id&$filter=location_id EQ "+item.id;
+        Url += " &and starttime GE " + dp.visibleStart().toString() + " and endtime LE " + dp.visibleEnd().toString();
+  
+        const rData = await axios.get("http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter?$orderby=Name");
+        data = manipulatePeople(rData.data.value)
+        data.splice(0, 0, {id: "L" + item.id, name: item.name, type: "location"});
+        dp.update({resources:data});
+  
+        
+        const eData = await axios.get(Url);
+  
+        data = manipulateAssignments(eData.data.value);
+        dp.update({events:data});
+      },
+      load: async function () {
+        const data = await axios.get("http://scheffler-hardcore.com:2010/hardcore/dp/DP_L_Location?$orderby=name");
+  
+        var tempJSON = data.data.value;
+          locations.list = [];
+  
+          tempJSON.forEach(function (arrItem) {
+              locations.list.push({id: arrItem.id.toString(), name: arrItem.name});
+          });
+         
+          /* WIRD durch die Auswahlliste in der Kopf- Tab-Zeile ersetzt.
+          var select = $("#locations");
+          select.innerHTML = '';
+  
+          locations.list.forEach(function (item) {
+            select.append($("<option></option>")
+              .attr("value", item.id)
+              .text(item.name));
+          });*/
+  
+          locations.activate(locations.list[0]);
+      
+      }
+    };
+  
+    var dp = new DayPilot.Scheduler("dp", {
+      locale:'de-de',
+      timeHeaders: [{"groupBy":"Day","format":"dddd, d MMMM yyyy"},{"groupBy":"Hour"},{"groupBy":"Cell","format":"mm"}],
+      scale:"CellDuration",
+      days: DayPilot.Date.today().daysInMonth(),
+      startDate: DayPilot.Date.today().firstDayOfMonth(),
+      timeRangeSelectedHandling: "Enabled",
+      
+     
+      cellWidthSpec: "Fixed",
+      cellWidth: 20,
+      crosshairType: "Header",
+      
+      
+      cellDuration: 30,
+      businessBeginsHour : 10,
+      businessEndsHour : 4,
+      showNonBusiness: true,
+      businessWeekends: false,
+      floatingEvents: true,
+      
+     
+      eventHeight: 30,
+      headerHeight: 30,
+      treeEnabled: true,
+      allowEventOverlap: true,
+      multiMoveVerticalMode: "Master",
+      eventResizeHandling: "Update",
+      eventMoveHandling:"Update",
+      rowHeaderColumns: [
+        {name: "Name", display: "name"},
+        {name: "Total"}
+      ],
+  
+      onEventResized: async function (args) {
+        var e = args.e;
+      this.message("Event resized: " + args.e.text());
+  
+      const res = await axios.patch("http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Plan(" + e.data.id +")",{starttime: args.newStart,endtime: args.newEnd});
+  
+      if(res.status=200){
+        dp.message(res.data.message);  
+      };
+    },
+     
+      onTimeRangeSelected: async function (args) {
+        var dp = this;
+  
+        var row = dp.rows.find(args.resource);
+        if (row.index === 0) {
+          DayPilot.Modal.alert("No assignment for this shift.<br><br>Click below to create a new assignment.").then(function (modal) {
+            dp.clearSelection();
+          });
+          return;
+        }
+  
+   //     DayPilot.Modal.confirm("Create a new assignment?").then(function (modal) {
+          dp.clearSelection();
+   //       if (!modal.result) {
+   //         return;
+   //       }
+  
+          var locationId = $("#locations").val();
+          var iddata={id:parseInt(args.resource)};
+          
+           
+          const res = await axios.post("http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Plan",{starttime:args.start,endtime:args.end,location_id:parseInt(locationId),stamm_id: iddata})
+          
+          if (res.status = 201){
+            var data = res.data;
+            var id   = data.id;
+  
+            dp.events.add(new DayPilot.Event({
+                start: args.start,
+                end: args.end,
+                id: id,
+                resource: args.resource,
+                location: locationId,
+                person: args.resource,
+                join: id
+              }));
+  
+              dp.events.add(new DayPilot.Event({
+                start: args.start,
+                end: args.end,
+                id: "L" + id,
+                resource: "L" + locationId,
+                location: locationId,
+                person: args.resource,
+                type: "location",
+                join: id
+              }));
+  
+  
+          };
+         
+      },
+      onBeforeCellRender: function (args) {
+        if (args.cell.y === 0) {
+          args.cell.backColor = "#e0b4a8";
+        }
+      },
+      onBeforeRowHeaderRender: function (args) {
+        var duration = args.row.events.totalDuration();
+        var columnTotal = args.row.columns[1]
+        if (duration.totalHours() > 0 && columnTotal) {
+          columnTotal.html = duration.totalHours() + "h";
+        }
+        if (args.row.data.type === "location") {
+          args.row.backColor = "#e06146";
+          args.row.fontColor = "#fff";
+          if (columnTotal) {
+            columnTotal.fontColor = "#fff";
+          }
+        }
+      },
+      onEventMove: async function (args) {
+        
+        var e = args.e;
+        //dp.message("External drop forbidden");
+       
+  
+        if (e.data.type === "location") {
+          const res = await axios.patch("http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Plan(" + e.data.join +")",{starttime: args.newStart,endtime: args.newEnd});
+          
+          if(res.status=200){
+            dp.message(res.data.message);  
+          };
+          
+        }
+  
+      },
+      onTimeRangeSelecting: function (args) {
+        if (args.duration.totalHours() > 8) {
+          args.allowed = false;
+          args.right.enabled = true;
+          args.right.html = "Schichtlänge max. 8 Stunden";
+        }
+      },
+      onBeforeEventRender: function (args) {
+        var isLocation = args.data.type === "location";
+        var inactive = args.data.type === "inactive";
+        
+        if (isLocation) {
+          var person = dp.rows.find(args.data.person);
+  
+          args.data.backColor = "#bfd9a9";
+          args.data.borderColor = "#7aa35d";
+          args.data.barHidden = true;
+          args.data.html = person.name;
+          args.data.moveVDisabled = true;
+  
+          args.data.areas = [
+            {
+              right: 2,
+              top: 2,
+              height: 21,
+              width: 21,
+              cssClass: "scheduler_default_event_delete",
+              style: "background-color: #fff; border: 1px solid #ccc; box-sizing: border-box; border-radius: 10px; padding: 0px;",
+              visibility: "Visible",
+              onClick:  function (args) {
+                DayPilot.Modal.confirm("Schicht löschen?").then(async function (margs) {
+                  if (!margs.result) {
+                    return;
+                  }
+                  var locationAssignment = args.source;
+                  var assignmentId = locationAssignment.data.join;
+                  var personAssignment = dp.events.find(assignmentId);
+  
+                  const res = await axios.delete("http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Plan(" +  assignmentId +")");
+                  if(res.status=200){
+                    dp.events.remove(locationAssignment);
+                      dp.events.remove(personAssignment);
+                  };
+                
+                });
+              }
+            }
+          ];
+        } else {
+          var location = locations.find(args.data.location);
+          var person = dp.rows.find(args.data.person);
+          if (location) {
+            args.data.html = location.name;
+            args.data.moveHDisabled = true;
+          }
+          if (inactive) {
+            args.data.backColor = "#eee";
+            args.data.fontColor = "#666";
+            args.data.barHidden = true;
+            args.data.moveDisabled = true;
+            args.data.resizeDisabled = true;
+          } else {
+            
+            (person !=null)?(args.data.backColor = person.data.color):(args.data.backColor = "#bfd9a9");
+            
+            
+            args.data.borderColor ="#7aa35d";
+            args.data.barHidden = true;
+            (person !=null)?(args.data.bubbleHtml =person.name):(args.data.bubbleHtml ="");
+            
+            //dp.update(args);
+          }
+        }
+  
+      }
+    });
+    dp.init();
+  
+  
+    function goMonth(nAction) {
+      if (nAction == 0) dp.startDate = dp.startDate.addMonths(-1);
+      else if (nAction == 1) dp.startDate = dp.startDate.addMonths(1);
+  
+      dp.update(dp.startDate);
+      dp.days = dp.startDate.daysInMonth();//Anzahl der Tage im ausgewählten Monat
+      dp.update(dp.days);
+  
+      locations.activate($('#locations').val());
+    }
+  </script>
+  
+  <script>
+  /*  $(document).ready(function () {
+  
+      $("#locations").change(function (ev) {
+        var id = $(this).val();
+       locations.activate(id);
+      });
+  
+      locations.load();
+      
+  
+    });*/
+  
+  </script>
+</section>
+ 
 
  
   <script>
@@ -205,7 +531,8 @@
         document.getElementById('tabcontainer').style.display = "none";
         document.getElementById('tab2').style.display = "block";
         
-        $("#tab2").load("tab2.html");
+        //$("#tab2").load("shift.html");
+        
         
       }else{
         document.getElementById('tab2').style.display = "none";
@@ -226,6 +553,13 @@ $( document ).ready(function() {
     $(this).addClass('changed');
    
   });
+  
+  $("#locations").change(function (ev) {
+        var id = $(this).val();
+       locations.activate(id);
+      });
+  
+      locations.load();
 }) 
 </script>
 <script src="js/la_color_picker.js"></script>

@@ -61,7 +61,7 @@ function writePersonal(arrData=[]){
   $("#inputPlz").val(arrData[iRec].PLZ);
   $("#inputBirthday").val(arrData[iRec].Geburtsdatum);
   $("#inputNationalitaet").val(arrData[iRec].Staatsangehoerigkeit);
-  $("#favcolor").val(aPersonal[iRec].farbe);
+  $("#favcolor").val(aPersonal[iRec].farbe).css('border-right-color' , aPersonal[iRec].farbe);
   //alert($("inputPlz").css("background-color"));  
   if(arrData.fkJobsID){
     (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
@@ -138,7 +138,9 @@ async function deleteBtnClick(){
 };
 
 function loginBtnClick(){
-   
+
+  $("#login").prop("disabled",true);
+
     var sFilter=  $("#locations :selected").text();
     fetch('http://scheffler-hardcore.com:2010/hardcore/dp/DP_T_Mitarbeiter?$expand=fkJobsID,fkLohnartID&$filter=contains(Betrieb,'+ "'" +sFilter+"'" +')')
     .then(function(response){
@@ -212,8 +214,8 @@ function movePersonal(){
     $("#inputPlz").val(aPersonal[iRec].PLZ);
     $("#inputBirthday").val(aPersonal[iRec].Geburtsdatum);
     $("#inputNationalitaet").val(aPersonal[iRec].Staatsangehoerigkeit);
-    $("#favcolor").val(aPersonal[iRec].farbe);
-    $("favcolor").css('border-style' , aPersonal[iRec].farbe);
+    $("#favcolor").val(aPersonal[iRec].farbe).css('border-right-color' , aPersonal[iRec].farbe);
+    
 
     if(aPersonal[iRec].fkJobsID){
       (aPersonal[iRec].fkJobsID.minijob==1)?$("#mini").prop('checked', true):$("#mini").prop('checked', false);
